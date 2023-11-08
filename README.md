@@ -1,2 +1,2 @@
 # todo-app
-Todo app
+New Todo app
