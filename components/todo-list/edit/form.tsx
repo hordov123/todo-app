@@ -1,9 +1,9 @@
-"use client"
+'use client';
 
-import {zodResolver} from "@hookform/resolvers/zod"
-import {useForm} from "react-hook-form"
-import * as z from "zod"
-import {Button} from "@todo/components/ui/button"
+import {zodResolver} from '@hookform/resolvers/zod';
+import {useForm} from 'react-hook-form';
+import * as z from 'zod';
+import {Button} from '@todo/components/ui/button';
 import {
     Form,
     FormControl,
@@ -12,22 +12,19 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@todo/components/ui/form"
-import {Input} from "@todo/components/ui/input"
-import {editListFormSchema} from "@todo/components/todo-list/edit/schema";
-import {Textarea} from "@todo/components/ui/textarea";
-import {Card} from "@todo/components/ui/card";
-import {useRouter} from "next/navigation";
-import {useEditTodoList} from "@todo/hooks/mutations/todo-list/useEditTodoList";
-import {Switch} from "@todo/components/ui/switch";
-import {useGetTodoList} from "@todo/hooks/queries/todo-list/useGetTodoList";
-import {useEffect} from "react";
+} from '@todo/components/ui/form';
+import {Input} from '@todo/components/ui/input';
+import {editListFormSchema} from '@todo/components/todo-list/edit/schema';
+import {Textarea} from '@todo/components/ui/textarea';
+import {useEditTodoList} from '@todo/hooks/mutations/todo-list/useEditTodoList';
+import {Switch} from '@todo/components/ui/switch';
+import {useGetTodoList} from '@todo/hooks/queries/todo-list/useGetTodoList';
+import {useEffect} from 'react';
 
-const EditListForm = ({id}: EditListFormProps) => {
-    const router = useRouter()
+const EditListForm = ({id, isSuccess}: EditListFormProps) => {
 
-    const {data} = useGetTodoList({params: {id}})
-    const editTodoList = useEditTodoList({id: id})
+    const {data} = useGetTodoList({params: {id}});
+    const editTodoList = useEditTodoList({id: id});
 
     const form = useForm<z.infer<typeof editListFormSchema>>({
         resolver: zodResolver(editListFormSchema),
@@ -36,13 +33,13 @@ const EditListForm = ({id}: EditListFormProps) => {
             description: '',
             activeStatus: false
         },
-    })
+    });
 
     useEffect(() => {
-        if (!data) return
-        form.setValue('title', data.data.title)
-        form.setValue('description', data.data.description)
-        form.setValue('activeStatus', data.data.activeStatus)
+        if (!data) return;
+        form.setValue('title', data.data.title);
+        form.setValue('description', data.data.description);
+        form.setValue('activeStatus', data.data.activeStatus);
     }, [data]);
 
 
@@ -52,13 +49,13 @@ const EditListForm = ({id}: EditListFormProps) => {
                 ...values
             },
             {
-                onSuccess: () => router.push('/')
-            })
-    }
+                onSuccess: () => isSuccess(true)
+            });
+    };
 
-    return <Card className='p-6 max-w-[30rem] w-full'>
+    return <>
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form className="space-y-8">
                 <FormField
                     control={form.control}
                     name="title"
@@ -110,14 +107,15 @@ const EditListForm = ({id}: EditListFormProps) => {
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Submit</Button>
+                <Button onClick={form.handleSubmit(onSubmit)} type="submit">Submit</Button>
             </form>
         </Form>
-    </Card>
-}
+    </>;
+};
 
 interface EditListFormProps {
     id: string;
+    isSuccess: (status: boolean) => void;
 }
 
 export default EditListForm;

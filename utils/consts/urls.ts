@@ -21,4 +21,4 @@ export const urls = {
         list: (id: string) => `todo-list/${id}`,
         todo: (listId: string, todoId: string) => `todo-list/${listId}/tasks/${todoId}`
     }
-} as const
+} as const; 

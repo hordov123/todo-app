@@ -1,9 +1,9 @@
-"use client"
+'use client';
 
-import {zodResolver} from "@hookform/resolvers/zod"
-import {useForm} from "react-hook-form"
-import * as z from "zod"
-import {Button} from "@todo/components/ui/button"
+import {zodResolver} from '@hookform/resolvers/zod';
+import {useForm} from 'react-hook-form';
+import * as z from 'zod';
+import {Button} from '@todo/components/ui/button';
 import {
     Form,
     FormControl,
@@ -12,41 +12,51 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@todo/components/ui/form"
-import {Input} from "@todo/components/ui/input"
-import {Textarea} from "@todo/components/ui/textarea";
-import {Card} from "@todo/components/ui/card";
-import {useRouter} from "next/navigation";
-import {DateTimePicker} from "@todo/components/ui/date-time-picker";
-import {useEditTodo} from "@todo/hooks/mutations/todo/useEditTodo";
-import {editTodoFormSchema} from "@todo/components/todo/edit/schema";
-import {Switch} from "@todo/components/ui/switch";
+} from '@todo/components/ui/form';
+import {Input} from '@todo/components/ui/input';
+import {Textarea} from '@todo/components/ui/textarea';
+import {DateTimePicker} from '@todo/components/ui/date-time-picker';
+import {useEditTodo} from '@todo/hooks/mutations/todo/useEditTodo';
+import {editTodoFormSchema} from '@todo/components/todo/edit/schema';
+import {Switch} from '@todo/components/ui/switch';
+import {useEffect} from 'react';
+import {useGetTodo} from '@todo/hooks/queries/todo/useGetTodo';
 
-const EditTodoForm = ({listId, todoId}: EditTodoFormProps) => {
-    const router = useRouter()
+const EditTodoForm = ({listId, todoId, isSuccess}: EditTodoFormProps) => {
 
     const form = useForm<z.infer<typeof editTodoFormSchema>>({
         resolver: zodResolver(editTodoFormSchema),
         defaultValues: {
-            title: "",
-            description: "",
+            title: '',
+            description: '',
             deadline: new Date()
         },
-    })
+    });
 
-    const createTodo = useEditTodo({todoId, listId})
+    const {data} = useGetTodo({listId, todoId});
+    const createTodo = useEditTodo({todoId, listId});
+
+    useEffect(() => {
+        if (!data) return;
+        form.setValue('title', data.data.title);
+        form.setValue('description', data.data.description);
+        form.setValue('activeStatus', data.data.activeStatus);
+        form.setValue('deadline', new Date(data.data.deadline));
+    }, [data]);
 
     const onSubmit = (values: z.infer<typeof editTodoFormSchema>) => {
         createTodo.mutate(
             {
                 ...values,
                 deadline: values.deadline,
-            })
-    }
+            }, {
+                onSuccess: () => isSuccess(true)
+            });
+    };
 
     return <>
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form className="space-y-8">
                 <FormField
                     control={form.control}
                     name="title"
@@ -111,15 +121,16 @@ const EditTodoForm = ({listId, todoId}: EditTodoFormProps) => {
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Submit</Button>
+                <Button onClick={form.handleSubmit(onSubmit)} type="submit">Submit</Button>
             </form>
         </Form>
-    </>
-}
+    </>;
+};
 
 interface EditTodoFormProps {
     listId: string;
     todoId: string;
+    isSuccess: (status: boolean) => void;
 }
 
 export default EditTodoForm;

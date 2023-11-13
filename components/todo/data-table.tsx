@@ -1,39 +1,24 @@
-"use client"
+'use client';
 
-import {
-    ColumnDef,
-    flexRender,
-    getCoreRowModel,
-    useReactTable,
-} from "@tanstack/react-table"
+import {ColumnDef, flexRender, getCoreRowModel, useReactTable,} from '@tanstack/react-table';
 
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@todo/components/ui/table"
-import {useRouter} from "next/navigation";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from '@todo/components/ui/table';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
 }
 
-export function DataTable<TData, TValue>({ columns, data,}: DataTableProps<TData, TValue>) {
-    const router = useRouter()
-
+export function DataTable<TData, TValue>({columns, data,}: DataTableProps<TData, TValue>) {
 
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-    })
+    });
 
     return (
-        <div className="rounded-md border">
+        <div className="rounded-md border overflow-hidden">
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
@@ -48,7 +33,7 @@ export function DataTable<TData, TValue>({ columns, data,}: DataTableProps<TData
                                                 header.getContext()
                                             )}
                                     </TableHead>
-                                )
+                                );
                             })}
                         </TableRow>
                     ))}
@@ -76,5 +61,5 @@ export function DataTable<TData, TValue>({ columns, data,}: DataTableProps<TData
                 </TableBody>
             </Table>
         </div>
-    )
+    );
 }

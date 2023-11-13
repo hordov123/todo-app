@@ -1,9 +1,9 @@
-"use client"
+'use client';
 
-import {zodResolver} from "@hookform/resolvers/zod"
-import {useForm} from "react-hook-form"
-import * as z from "zod"
-import {Button} from "@todo/components/ui/button"
+import {zodResolver} from '@hookform/resolvers/zod';
+import {useForm} from 'react-hook-form';
+import * as z from 'zod';
+import {Button} from '@todo/components/ui/button';
 import {
     Form,
     FormControl,
@@ -12,28 +12,25 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@todo/components/ui/form"
-import {Input} from "@todo/components/ui/input"
-import {Textarea} from "@todo/components/ui/textarea";
-import {Card} from "@todo/components/ui/card";
-import {useCreateTodo} from "@todo/hooks/mutations/todo/useCreateTodo";
-import {useRouter} from "next/navigation";
-import {createTodoFormSchema} from "@todo/components/todo/create/schema";
-import {DateTimePicker} from "@todo/components/ui/date-time-picker";
+} from '@todo/components/ui/form';
+import {Input} from '@todo/components/ui/input';
+import {Textarea} from '@todo/components/ui/textarea';
+import {useCreateTodo} from '@todo/hooks/mutations/todo/useCreateTodo';
+import {createTodoFormSchema} from '@todo/components/todo/create/schema';
+import {DateTimePicker} from '@todo/components/ui/date-time-picker';
 
-const CreateTodoForm = ({listId}: CreateTodoFormProps) => {
-    const router = useRouter()
+const CreateTodoForm = ({listId, isSuccess}: CreateTodoFormProps) => {
 
     const form = useForm<z.infer<typeof createTodoFormSchema>>({
         resolver: zodResolver(createTodoFormSchema),
         defaultValues: {
-            title: "",
-            description: "",
+            title: '',
+            description: '',
             deadline: new Date()
         },
-    })
+    });
 
-    const createTodo = useCreateTodo({id: listId})
+    const createTodo = useCreateTodo({id: listId});
 
     const onSubmit = (values: z.infer<typeof createTodoFormSchema>) => {
         createTodo.mutate(
@@ -42,12 +39,14 @@ const CreateTodoForm = ({listId}: CreateTodoFormProps) => {
                 activeStatus: true,
                 deadline: values.deadline,
                 'todo-listId': listId
-            })
-    }
+            }, {
+                onSuccess: () => isSuccess(true)
+            });
+    };
 
     return <>
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form className="space-y-8">
                 <FormField
                     control={form.control}
                     name="title"
@@ -90,14 +89,15 @@ const CreateTodoForm = ({listId}: CreateTodoFormProps) => {
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Submit</Button>
+                <Button onClick={form.handleSubmit(onSubmit)} type="submit">Submit</Button>
             </form>
         </Form>
-    </>
-}
+    </>;
+};
 
 interface CreateTodoFormProps {
     listId: string;
+    isSuccess: (status: boolean) => void;
 }
 
 export default CreateTodoForm;

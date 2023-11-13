@@ -1,9 +1,9 @@
-"use client"
+'use client';
 
-import {DotsHorizontalIcon} from "@radix-ui/react-icons"
-import {Row} from "@tanstack/react-table"
+import {DotsHorizontalIcon} from '@radix-ui/react-icons';
+import {Row} from '@tanstack/react-table';
 
-import {Button} from "@todo/components/ui/button"
+import {Button} from '@todo/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,18 +11,16 @@ import {
     DropdownMenuRadioGroup,
     DropdownMenuRadioItem,
     DropdownMenuSeparator,
-    DropdownMenuShortcut,
     DropdownMenuSub,
     DropdownMenuSubContent,
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
-} from "@todo/components/ui/dropdown-menu"
-import {useDeleteTodoList} from "@todo/hooks/mutations/todo-list/useDeleteTodoList";
-import {useRouter} from "next/navigation";
-import {useTodoListChangeStatus} from "@todo/hooks/mutations/todo-list/useTodoListChangeStatus";
-import {useDeleteTodo} from "@todo/hooks/mutations/todo/useDeleteTodo";
-import {useTodoChangeStatus} from "@todo/hooks/mutations/todo/useTodoChangeStatus";
-import EditDialog from "@todo/components/todo/edit/edit-dialog";
+} from '@todo/components/ui/dropdown-menu';
+import {useDeleteTodo} from '@todo/hooks/mutations/todo/useDeleteTodo';
+import {useTodoChangeStatus} from '@todo/hooks/mutations/todo/useTodoChangeStatus';
+import React, {useState} from 'react';
+import {Modal} from '@todo/components/ui/modal';
+import EditTodoForm from '@todo/components/todo/edit/form';
 
 interface DataTableRowActionsProps<TData> {
     row: Row<TData>
@@ -30,13 +28,12 @@ interface DataTableRowActionsProps<TData> {
 
 export function DataTableRowActions<TData>({row}: DataTableRowActionsProps<TData>) {
 
-    const router = useRouter()
+    const [open, setOpen] = useState(false);
 
+    const deleteTodo = useDeleteTodo({todoId: row.getValue('id'), listId: row.getValue('todo-listId')});
+    const changeTodoState = useTodoChangeStatus({todoId: row.getValue('id'), listId: row.getValue('todo-listId')});
 
-    const deleteTodo = useDeleteTodo({todoId: row.getValue('id'), listId: row.getValue('todo-listId')})
-    const changeTodoState = useTodoChangeStatus({todoId: row.getValue('id'), listId: row.getValue('todo-listId')})
-
-    return (
+    return <>
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button
@@ -48,8 +45,8 @@ export function DataTableRowActions<TData>({row}: DataTableRowActionsProps<TData
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
-                <DropdownMenuItem asChild>
-                    <EditDialog listId={row.getValue('todo-listId')} todoId={row.getValue('id')}/>
+                <DropdownMenuItem onClick={() => setOpen(true)}>
+                    Edit
                 </DropdownMenuItem>
                 <DropdownMenuSub>
                     <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
@@ -70,10 +67,18 @@ export function DataTableRowActions<TData>({row}: DataTableRowActionsProps<TData
                 </DropdownMenuSub>
                 <DropdownMenuSeparator/>
                 <DropdownMenuSeparator/>
-                <DropdownMenuItem onClick={() => deleteTodo.mutate({todoId: row.getValue('id'), listId: row.getValue('todo-listId')})}>
+                <DropdownMenuItem onClick={() => deleteTodo.mutate({
+                    todoId: row.getValue('id'),
+                    listId: row.getValue('todo-listId')
+                })}>
                     Delete
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
-    )
+
+        <Modal setOpen={setOpen} open={open}>
+            <EditTodoForm listId={row.getValue('todo-listId')} todoId={row.getValue('id')}
+                          isSuccess={status => setOpen(!status)}/>
+        </Modal>
+    </>;
 }

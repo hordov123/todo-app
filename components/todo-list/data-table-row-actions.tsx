@@ -1,9 +1,9 @@
-"use client"
+'use client';
 
-import {DotsHorizontalIcon} from "@radix-ui/react-icons"
-import {Row} from "@tanstack/react-table"
+import {DotsHorizontalIcon} from '@radix-ui/react-icons';
+import {Row} from '@tanstack/react-table';
 
-import {Button} from "@todo/components/ui/button"
+import {Button} from '@todo/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,15 +11,16 @@ import {
     DropdownMenuRadioGroup,
     DropdownMenuRadioItem,
     DropdownMenuSeparator,
-    DropdownMenuShortcut,
     DropdownMenuSub,
     DropdownMenuSubContent,
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
-} from "@todo/components/ui/dropdown-menu"
-import {useDeleteTodoList} from "@todo/hooks/mutations/todo-list/useDeleteTodoList";
-import {useRouter} from "next/navigation";
-import {useTodoListChangeStatus} from "@todo/hooks/mutations/todo-list/useTodoListChangeStatus";
+} from '@todo/components/ui/dropdown-menu';
+import {useDeleteTodoList} from '@todo/hooks/mutations/todo-list/useDeleteTodoList';
+import {useTodoListChangeStatus} from '@todo/hooks/mutations/todo-list/useTodoListChangeStatus';
+import EditListForm from '@todo/components/todo-list/edit/form';
+import {Modal} from '@todo/components/ui/modal';
+import {useState} from 'react';
 
 interface DataTableRowActionsProps<TData> {
     row: Row<TData>
@@ -27,13 +28,12 @@ interface DataTableRowActionsProps<TData> {
 
 export function DataTableRowActions<TData>({row}: DataTableRowActionsProps<TData>) {
 
-    const router = useRouter()
+    const [open, setOpen] = useState(false);
 
+    const deleteTodoList = useDeleteTodoList({id: row.getValue('id')});
+    const changeTodoListState = useTodoListChangeStatus({id: row.getValue('id')});
 
-    const deleteTodoList = useDeleteTodoList({id: row.getValue('id')})
-    const changeTodoListState = useTodoListChangeStatus({id: row.getValue('id')})
-
-    return (
+    return <>
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button
@@ -46,25 +46,27 @@ export function DataTableRowActions<TData>({row}: DataTableRowActionsProps<TData
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
                 <DropdownMenuItem onClick={(event) => {
-                    event.stopPropagation()
-                    router.push(`edit-list/${row.getValue('id')}`)
+                    event.stopPropagation();
+                    setOpen(true);
                 }}>Edit</DropdownMenuItem>
                 <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
+                    <DropdownMenuSubTrigger onClick={event => event.stopPropagation()}>
+                        Status
+                    </DropdownMenuSubTrigger>
                     <DropdownMenuSubContent>
                         <DropdownMenuRadioGroup value={row.getValue('activeStatus')?.toString()}>
                             <DropdownMenuRadioItem
                                 onClick={(event) => {
-                                    event.stopPropagation()
-                                    changeTodoListState.mutate({activeStatus: true})
+                                    event.stopPropagation();
+                                    changeTodoListState.mutate({activeStatus: true});
                                 }}
                                 value={'true'}>
                                 Active
                             </DropdownMenuRadioItem>
                             <DropdownMenuRadioItem
                                 onClick={(event) => {
-                                    event.stopPropagation()
-                                    changeTodoListState.mutate({activeStatus: false})
+                                    event.stopPropagation();
+                                    changeTodoListState.mutate({activeStatus: false});
                                 }}
                                 value={'false'}>
                                 Done
@@ -75,12 +77,19 @@ export function DataTableRowActions<TData>({row}: DataTableRowActionsProps<TData
                 <DropdownMenuSeparator/>
                 <DropdownMenuSeparator/>
                 <DropdownMenuItem onClick={(event) => {
-                    event.stopPropagation()
-                    deleteTodoList.mutate({id: row.getValue('id')})
+                    event.stopPropagation();
+                    deleteTodoList.mutate({id: row.getValue('id')});
                 }}>
                     Delete
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
-    )
+        <div onClick={event => {
+            event.stopPropagation();
+        }}>
+            <Modal setOpen={setOpen} open={open}>
+                <EditListForm id={row.getValue('id')} isSuccess={status => setOpen(!status)}/>
+            </Modal>
+        </div>
+    </>;
 }

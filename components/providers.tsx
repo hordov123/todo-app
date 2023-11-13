@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
 import React, {ReactNode} from 'react';
-import {ThemeProvider} from "@todo/components/providers/theme-provider";
-import {QueryClient, QueryClientProvider} from 'react-query'
+import {ThemeProvider} from '@todo/components/providers/theme-provider';
+import {QueryClient, QueryClientProvider} from 'react-query';
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient(); 
 
 const Providers = ({children}: ProvidersProps) => {
 
@@ -14,7 +14,7 @@ const Providers = ({children}: ProvidersProps) => {
                 {children}
             </ThemeProvider>
         </QueryClientProvider>
-    </>
+    </>;
 };
 
 interface ProvidersProps {

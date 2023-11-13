@@ -1,8 +1,8 @@
 export type TodoData = {
     createdAt: string,
-    name: string,
+    title: string,
     deadline: Date,
-    text: string,
+    description: string,
     activeStatus: boolean,
     id: string,
     'todo-listId': string

@@ -1,8 +1,8 @@
-"use client"
+'use client';
 
-import * as React from "react"
+import * as React from 'react';
 
-import { Button } from "@todo/components/ui/button"
+import {Button} from '@todo/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,18 +11,18 @@ import {
     DropdownMenuRadioItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@todo/components/ui/dropdown-menu"
+} from '@todo/components/ui/dropdown-menu';
 
 export function TodoFilter({value, setValue}: TodoListFilterProps) {
 
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline">Open</Button>
+                <Button variant="outline" className='capitalize'>{value}</Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel>Filter lists</DropdownMenuLabel>
-                <DropdownMenuSeparator />
+                <DropdownMenuLabel>Filter by status</DropdownMenuLabel>
+                <DropdownMenuSeparator/>
                 <DropdownMenuRadioGroup value={value} onValueChange={setValue}>
                     <DropdownMenuRadioItem value="all">All</DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="active">Active</DropdownMenuRadioItem>
@@ -30,7 +30,7 @@ export function TodoFilter({value, setValue}: TodoListFilterProps) {
                 </DropdownMenuRadioGroup>
             </DropdownMenuContent>
         </DropdownMenu>
-    )
+    );
 }
 
 interface TodoListFilterProps {

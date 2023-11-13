@@ -1,21 +1,21 @@
 import * as React from 'react';
-import { DateTime } from 'luxon';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import {DateTime} from 'luxon';
+import {Calendar as CalendarIcon} from 'lucide-react';
 
-import { SelectSingleEventHandler } from 'react-day-picker';
-import {Label} from "@todo/components/ui/label";
-import {Input} from "@todo/components/ui/input";
-import {Button} from "@todo/components/ui/button";
-import {cn} from "@todo/utils/lib/utils";
-import {Popover, PopoverContent, PopoverTrigger} from "@todo/components/ui/popover";
-import {Calendar} from "@todo/components/ui/calendar";
+import {SelectSingleEventHandler} from 'react-day-picker';
+import {Label} from '@todo/components/ui/label';
+import {Input} from '@todo/components/ui/input';
+import {Button} from '@todo/components/ui/button';
+import {cn} from '@todo/utils/lib/utils';
+import {Popover, PopoverContent, PopoverTrigger} from '@todo/components/ui/popover';
+import {Calendar} from '@todo/components/ui/calendar';
 
 interface DateTimePickerProps {
     date: Date;
     setDate: (date: Date) => void;
 }
 
-export function DateTimePicker({ date, setDate }: DateTimePickerProps) {
+export function DateTimePicker({date, setDate}: DateTimePickerProps) {
     const [selectedDateTime, setSelectedDateTime] = React.useState<DateTime>(
         DateTime.fromJSDate(date)
     );
@@ -32,10 +32,10 @@ export function DateTimePicker({ date, setDate }: DateTimePickerProps) {
     };
 
     const handleTimeChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        const { value } = e.target;
+        const {value} = e.target;
         const hours = Number.parseInt(value.split(':')[0] || '00', 10);
         const minutes = Number.parseInt(value.split(':')[1] || '00', 10);
-        const modifiedDay = selectedDateTime.set({ hour: hours, minute: minutes });
+        const modifiedDay = selectedDateTime.set({hour: hours, minute: minutes});
 
         setSelectedDateTime(modifiedDay);
         setDate(modifiedDay.toJSDate());
@@ -61,11 +61,11 @@ export function DateTimePicker({ date, setDate }: DateTimePickerProps) {
                 <Button
                     variant={'outline'}
                     className={cn(
-                        'w-[280px] justify-start text-left font-normal',
+                        'w-full justify-start text-left font-normal',
                         !date && 'text-muted-foreground'
                     )}
                 >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    <CalendarIcon className="mr-2 h-4 w-4"/>
                     {date ? (
                         selectedDateTime.toFormat('DDD HH:mm')
                     ) : (
